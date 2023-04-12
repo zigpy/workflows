@@ -101,7 +101,7 @@ jobs:
     env:
         python_version_name: ${${{ matrix.python-version}}::3}
     name: >-
-      Run tests Python ${{ python_version_name }}
+      Run tests Python ${{ env.python_version_name }}
     steps:
       - name: Check out code from GitHub
         uses: actions/checkout@v3.3.0
