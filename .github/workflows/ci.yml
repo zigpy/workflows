@@ -68,7 +68,7 @@ jobs:
           pip install -e .
 
   pre-commit:
-    name: Prepare pre-commit environment
+    name: Run pre-commit
     runs-on: ubuntu-latest
     needs: prepare-base
     steps:
