@@ -98,10 +98,8 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8.14', '3.9.15', '3.10.8', '3.11.0']
-    env:
-        python_version_name: ${${{ matrix.python-version}}::3}
     name: >-
-      Run tests Python ${{ env.python_version_name }}
+      Run tests Python ${{ matrix.python-version }}
     steps:
       - name: Check out code from GitHub
         uses: actions/checkout@v3.3.0
