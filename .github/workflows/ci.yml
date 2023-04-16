@@ -55,7 +55,7 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt') }}
+            hashFiles('setup.py', 'pyproject.toml') }}
           restore-keys: |
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{ steps.python.outputs.python-version }}-
       - name: Create Python virtual environment
@@ -64,8 +64,7 @@ jobs:
           python -m venv venv
           . venv/bin/activate
           pip install -U pip setuptools pre-commit
-          pip install -r requirements_test.txt
-          pip install -e .
+          pip install -e '.[testing]'
 
   pre-commit:
     name: Run pre-commit
@@ -88,7 +87,7 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt') }}
+            hashFiles('setup.py', 'pyproject.toml') }}
       - name: Lint and static analysis
         uses: pre-commit/action@v3.0.0
 
@@ -117,7 +116,7 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt') }}
+            hashFiles('setup.py', 'pyproject.toml') }}
       - name: Register Python problem matcher
         run: |
           echo "::add-matcher::.github/workflows/matchers/python.json"
@@ -166,7 +165,7 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt') }}
+            hashFiles('setup.py', 'pyproject.toml') }}
       - name: Download all coverage artifacts
         uses: actions/download-artifact@v3
       - name: Combine coverage results
