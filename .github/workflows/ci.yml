@@ -135,6 +135,7 @@ jobs:
             --timeout=20 \
             --durations=10 \
             --cov ${{ inputs.CODE_FOLDER }} \
+            --cov-config pyproject.toml \
             -o console_output_style=count \
             -p no:sugar \
             tests
