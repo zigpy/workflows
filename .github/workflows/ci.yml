@@ -11,22 +11,22 @@ on:
         type: string
       CACHE_VERSION:
         description: Cache version
-        required: true
+        required: false
         default: 2
         type: string
       PYTHON_VERSION_DEFAULT:
         description: Default Python version
-        required: true
+        required: false
         default: 3.9.15
         type: string
       PRE_COMMIT_CACHE_PATH:
         description: Pre-commit cache path
-        required: true
+        required: false
         default: ~/.cache/pre-commit
         type: string
       MINIMUM_COVERAGE_PERCENTAGE:
         description: Minimum code coverage percentage
-        required: true
+        required: false
         default: 80
         type: string
 
@@ -56,7 +56,7 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt') }}
+            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg') }}
           restore-keys: |
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{ steps.python.outputs.python-version }}-
       - name: Create Python virtual environment
@@ -94,9 +94,25 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt') }}
+            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg') }}
+      - name: Restore pre-commit environment from cache
+        id: cache-precommit
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ inputs.PRE_COMMIT_CACHE_PATH }}
+          key: |
+            ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-pre-commit-
+      - name: Install pre-commit dependencies
+        if: steps.cache-precommit.outputs.cache-hit != 'true'
+        run: |
+          . venv/bin/activate
+          pre-commit install-hooks
       - name: Lint and static analysis
-        uses: pre-commit/action@v3
+        run: |
+          . venv/bin/activate
+          pre-commit run --show-diff-on-failure --color=always
 
   pytest:
     runs-on: ubuntu-latest
@@ -124,7 +140,7 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt') }}
+            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg') }}
       - name: Register Python problem matcher
         run: |
           echo "::add-matcher::.github/workflows/matchers/python.json"
@@ -143,6 +159,7 @@ jobs:
             --timeout=20 \
             --durations=10 \
             --cov ${{ inputs.CODE_FOLDER }} \
+            --cov-config pyproject.toml \
             -o console_output_style=count \
             -p no:sugar \
             tests
@@ -174,7 +191,7 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt') }}
+            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg') }}
       - name: Download all coverage artifacts
         uses: actions/download-artifact@v3
       - name: Combine coverage results
