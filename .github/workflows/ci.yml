@@ -11,22 +11,22 @@ on:
         type: string
       CACHE_VERSION:
         description: Cache version
-        required: true
+        required: false
         default: 2
         type: string
       PYTHON_VERSION_DEFAULT:
         description: Default Python version
-        required: true
+        required: false
         default: 3.9.15
         type: string
       PRE_COMMIT_CACHE_PATH:
         description: Pre-commit cache path
-        required: true
+        required: false
         default: ~/.cache/pre-commit
         type: string
       MINIMUM_COVERAGE_PERCENTAGE:
         description: Minimum code coverage percentage
-        required: true
+        required: false
         default: 80
         type: string
 
