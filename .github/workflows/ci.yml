@@ -99,11 +99,11 @@ jobs:
         id: cache-precommit
         uses: actions/cache/restore@v3
         with:
-          path: ${{ env.PRE_COMMIT_CACHE_PATH }}
+          path: ${{ inputs.PRE_COMMIT_CACHE_PATH }}
           key: |
-            ${{ env.CACHE_VERSION}}-${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+            ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
           restore-keys: |
-            ${{ env.CACHE_VERSION}}-${{ runner.os }}-pre-commit-
+            ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-pre-commit-
       - name: Install pre-commit dependencies
         if: steps.cache-precommit.outputs.cache-hit != 'true'
         run: |
