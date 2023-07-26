@@ -95,8 +95,24 @@ jobs:
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
             hashFiles('setup.py', 'requirements_test.txt') }}
+      - name: Restore pre-commit environment from cache
+        id: cache-precommit
+        uses: actions/cache/restore@v3
+        with:
+          path: ${{ env.PRE_COMMIT_CACHE_PATH }}
+          key: |
+            ${{ env.CACHE_VERSION}}-${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            ${{ env.CACHE_VERSION}}-${{ runner.os }}-pre-commit-
+      - name: Install pre-commit dependencies
+        if: steps.cache-precommit.outputs.cache-hit != 'true'
+        run: |
+          . venv/bin/activate
+          pre-commit install-hooks
       - name: Lint and static analysis
-        uses: pre-commit/action@v3
+        run: |
+          . venv/bin/activate
+          pre-commit run --show-diff-on-failure --color=always
 
   pytest:
     runs-on: ubuntu-latest
