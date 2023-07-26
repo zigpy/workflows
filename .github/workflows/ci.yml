@@ -41,16 +41,16 @@ jobs:
         python-version: ['3.8.14', '3.9.15', '3.10.8', '3.11.0', '3.12']
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         id: python
-        uses: actions/setup-python@v4.5.0
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
       - name: Restore base Python virtual environment
         id: cache-venv
-        uses: actions/cache@v3.2.6
+        uses: actions/cache@v3
         with:
           path: venv
           key: >-
@@ -79,15 +79,15 @@ jobs:
     needs: prepare-base
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3
       - name: Set up Python ${{ inputs.PYTHON_VERSION_DEFAULT }}
-        uses: actions/setup-python@v4.5.0
+        uses: actions/setup-python@v4
         id: python
         with:
           python-version: ${{ inputs.PYTHON_VERSION_DEFAULT }}
       - name: Restore base Python virtual environment
         id: cache-venv
-        uses: actions/cache/restore@v3.2.6
+        uses: actions/cache/restore@v3
         with:
           fail-on-cache-miss: true
           path: venv
@@ -96,7 +96,7 @@ jobs:
             steps.python.outputs.python-version }}-${{
             hashFiles('setup.py', 'requirements_test.txt') }}
       - name: Lint and static analysis
-        uses: pre-commit/action@v3.0.0
+        uses: pre-commit/action@v3
 
   pytest:
     runs-on: ubuntu-latest
@@ -108,16 +108,16 @@ jobs:
       Run tests Python ${{ matrix.python-version }}
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4.5.0
+        uses: actions/setup-python@v4
         id: python
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
       - name: Restore base Python virtual environment
         id: cache-venv
-        uses: actions/cache/restore@v3.2.6
+        uses: actions/cache/restore@v3
         with:
           fail-on-cache-miss: true
           path: venv
@@ -158,16 +158,16 @@ jobs:
     needs: pytest
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4.5.0
+        uses: actions/setup-python@v4
         id: python
         with:
           python-version: ${{ inputs.PYTHON_VERSION_DEFAULT }}
           allow-prereleases: true
       - name: Restore base Python virtual environment
         id: cache-venv
-        uses: actions/cache/restore@v3.2.6
+        uses: actions/cache/restore@v3
         with:
           fail-on-cache-miss: true
           path: venv
