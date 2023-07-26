@@ -56,7 +56,7 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt') }}
+            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg') }}
           restore-keys: |
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{ steps.python.outputs.python-version }}-
       - name: Create Python virtual environment
@@ -94,7 +94,7 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt') }}
+            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg') }}
       - name: Restore pre-commit environment from cache
         id: cache-precommit
         uses: actions/cache/restore@v3
@@ -140,7 +140,7 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt') }}
+            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg') }}
       - name: Register Python problem matcher
         run: |
           echo "::add-matcher::.github/workflows/matchers/python.json"
@@ -190,7 +190,7 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt') }}
+            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg') }}
       - name: Download all coverage artifacts
         uses: actions/download-artifact@v3
       - name: Combine coverage results
