@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.8.14', '3.9.15', '3.10.8', '3.11.0']
+        python-version: ['3.8.14', '3.9.15', '3.10.8', '3.11.0', '3.12']
     steps:
       - name: Check out code from GitHub
         uses: actions/checkout@v3.3.0
@@ -47,6 +47,7 @@ jobs:
         uses: actions/setup-python@v4.5.0
         with:
           python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
       - name: Restore base Python virtual environment
         id: cache-venv
         uses: actions/cache@v3.2.6
@@ -60,6 +61,11 @@ jobs:
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{ steps.python.outputs.python-version }}-
       - name: Create Python virtual environment
         if: steps.cache-venv.outputs.cache-hit != 'true'
+        env:
+          AIOHTTP_NO_EXTENSIONS: 1
+          MULTIDICT_NO_EXTENSIONS: 1
+          FROZENLIST_NO_EXTENSIONS: 1
+          YARL_NO_EXTENSIONS: 1
         run: |
           python -m venv venv
           . venv/bin/activate
@@ -97,7 +103,7 @@ jobs:
     needs: prepare-base
     strategy:
       matrix:
-        python-version: ['3.8.14', '3.9.15', '3.10.8', '3.11.0']
+        python-version: ['3.8.14', '3.9.15', '3.10.8', '3.11.0', '3.12']
     name: >-
       Run tests Python ${{ matrix.python-version }}
     steps:
@@ -108,6 +114,7 @@ jobs:
         id: python
         with:
           python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
       - name: Restore base Python virtual environment
         id: cache-venv
         uses: actions/cache/restore@v3.2.6
@@ -157,6 +164,7 @@ jobs:
         id: python
         with:
           python-version: ${{ inputs.PYTHON_VERSION_DEFAULT }}
+          allow-prereleases: true
       - name: Restore base Python virtual environment
         id: cache-venv
         uses: actions/cache/restore@v3.2.6
