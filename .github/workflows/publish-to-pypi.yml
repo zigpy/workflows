@@ -1,0 +1,32 @@
+name: Publish distributions to PyPI
+
+# yamllint disable-line rule:truthy
+on:
+  workflow_call:
+    inputs:
+      PYTHON_VERSION_DEFAULT:
+        description: Default Python version
+        required: false
+        default: "3.9"
+        type: string
+
+jobs:
+  build-and-publish:
+    name: Build and publish distributions to PyPI
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ inputs.PYTHON_VERSION_DEFAULT }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.PYTHON_VERSION_DEFAULT }}
+    - name: Install wheel
+      run: >-
+        pip install wheel build
+    - name: Build wheel
+      run: >-
+        python3 -m build
+    - name: Publish distribution to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_TOKEN }}
