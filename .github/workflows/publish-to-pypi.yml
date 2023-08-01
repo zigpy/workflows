@@ -10,6 +10,10 @@ on:
         default: "3.9"
         type: string
 
+    secrets:
+      PYPI_TOKEN:
+        required: true
+
 jobs:
   build-and-publish:
     name: Build and publish distributions to PyPI
