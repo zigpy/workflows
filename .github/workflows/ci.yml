@@ -50,15 +50,13 @@ jobs:
           allow-prereleases: true
       - name: Restore base Python virtual environment
         id: cache-venv
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         with:
           path: venv
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
             hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg') }}
-          restore-keys: |
-            ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{ steps.python.outputs.python-version }}-
       - name: Create Python virtual environment
         if: steps.cache-venv.outputs.cache-hit != 'true'
         env:
@@ -72,6 +70,11 @@ jobs:
           pip install -U pip setuptools pre-commit
           pip install -r requirements_test.txt
           pip install -e .
+      - name: Cache base Python virtual environment
+        uses: actions/cache/save@v3
+        with:
+          path: venv
+          key: ${{ steps.cache-venv.outputs.cache-primary-key }}
 
   pre-commit:
     name: Run pre-commit
@@ -102,13 +105,16 @@ jobs:
           path: ${{ inputs.PRE_COMMIT_CACHE_PATH }}
           key: |
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
-          restore-keys: |
-            ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-pre-commit-
       - name: Install pre-commit dependencies
         if: steps.cache-precommit.outputs.cache-hit != 'true'
         run: |
           . venv/bin/activate
           pre-commit install-hooks
+      - name: Cache pre-commit environment
+        uses: actions/cache/save@v3
+        with:
+          path: ${{ inputs.PRE_COMMIT_CACHE_PATH }}
+          key: ${{ steps.cache-precommit.outputs.cache-primary-key }}
       - name: Lint and static analysis
         run: |
           . venv/bin/activate
