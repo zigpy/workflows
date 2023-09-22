@@ -19,7 +19,7 @@ jobs:
     name: Build and publish distributions to PyPI
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v3.5.4
     - name: Set up Python ${{ inputs.PYTHON_VERSION_DEFAULT }}
       uses: actions/setup-python@v4
       with:
