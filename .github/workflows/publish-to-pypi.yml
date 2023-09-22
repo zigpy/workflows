@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Fetch all tags
+      run: git fetch --depth=1 --tags
     - name: Set up Python ${{ inputs.PYTHON_VERSION_DEFAULT }}
       uses: actions/setup-python@v4
       with:
