@@ -29,6 +29,11 @@ on:
         required: false
         default: 80
         type: string
+      PYTHON_MATRIX:
+        description: 'Comma-separated list of Python versions e.g. "3.11","3.12"'
+        default: '"3.12"'
+        required: false
+        type: string
 
 jobs:
   # Separate job to pre-populate the base dependency cache
@@ -38,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8.18", "3.9.18", "3.10.13", "3.11.8", "3.12"]
+        python-version: ${{ fromJSON(format('[{0}]', inputs.PYTHON_MATRIX || '"3.8.18", "3.9.18", "3.10.13", "3.11.8", "3.12"')) }}
     steps:
       - name: Check out code from GitHub
         uses: actions/checkout@v3
@@ -126,7 +131,7 @@ jobs:
     needs: prepare-base
     strategy:
       matrix:
-        python-version: ["3.8.18", "3.9.18", "3.10.13", "3.11.8", "3.12"]
+        python-version: ${{ fromJSON(format('[{0}]', inputs.PYTHON_MATRIX || '"3.8.18", "3.9.18", "3.10.13", "3.11.8", "3.12"')) }}
     name: >-
       Run tests Python ${{ matrix.python-version }}
     steps:
