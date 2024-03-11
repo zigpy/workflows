@@ -12,7 +12,7 @@ on:
       CACHE_VERSION:
         description: Cache version
         required: false
-        default: 2
+        default: 3
         type: string
       PYTHON_VERSION_DEFAULT:
         description: Default Python version
@@ -29,6 +29,11 @@ on:
         required: false
         default: 80
         type: string
+      PYTHON_MATRIX:
+        description: 'Comma-separated list of Python versions e.g. "3.11","3.12"'
+        default: '"3.8.14", "3.9.15", "3.10.8", "3.11.0", "3.12"'
+        required: false
+        type: string
 
 jobs:
   # Separate job to pre-populate the base dependency cache
@@ -38,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.8.14', '3.9.15', '3.10.8', '3.11.0', '3.12']
+        python-version: ${{ fromJSON(format('[{0}]', inputs.PYTHON_MATRIX)) }}
     steps:
       - name: Check out code from GitHub
         uses: actions/checkout@v3
@@ -65,11 +70,12 @@ jobs:
           FROZENLIST_NO_EXTENSIONS: 1
           YARL_NO_EXTENSIONS: 1
         run: |
-          python -m venv venv
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv venv venv
           . venv/bin/activate
-          pip install -U pip setuptools pre-commit
-          pip install -r requirements_test.txt
-          pip install -e .
+          uv pip install -U pip setuptools pre-commit
+          uv pip install -r requirements_test.txt
+          uv pip install -e .
       - name: Cache base Python virtual environment
         uses: actions/cache/save@v3
         with:
@@ -125,7 +131,7 @@ jobs:
     needs: prepare-base
     strategy:
       matrix:
-        python-version: ['3.8.14', '3.9.15', '3.10.8', '3.11.0', '3.12']
+        python-version: ${{ fromJSON(format('[{0}]', inputs.PYTHON_MATRIX )) }}
     name: >-
       Run tests Python ${{ matrix.python-version }}
     steps:
