@@ -17,7 +17,7 @@ on:
       PYTHON_VERSION_DEFAULT:
         description: Default Python version
         required: false
-        default: 3.9.18
+        default: 3.9.15
         type: string
       PRE_COMMIT_CACHE_PATH:
         description: Pre-commit cache path
@@ -31,7 +31,7 @@ on:
         type: string
       PYTHON_MATRIX:
         description: 'Comma-separated list of Python versions e.g. "3.11","3.12"'
-        default: '"3.12"'
+        default: '"3.8.14", "3.9.15", "3.10.8", "3.11.0", "3.12"'
         required: false
         type: string
 
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ${{ fromJSON(format('[{0}]', inputs.PYTHON_MATRIX || '"3.8.18", "3.9.18", "3.10.13", "3.11.8", "3.12"')) }}
+        python-version: ${{ fromJSON(format('[{0}]', inputs.PYTHON_MATRIX)) }}
     steps:
       - name: Check out code from GitHub
         uses: actions/checkout@v3
@@ -131,7 +131,7 @@ jobs:
     needs: prepare-base
     strategy:
       matrix:
-        python-version: ${{ fromJSON(format('[{0}]', inputs.PYTHON_MATRIX || '"3.8.18", "3.9.18", "3.10.13", "3.11.8", "3.12"')) }}
+        python-version: ${{ fromJSON(format('[{0}]', inputs.PYTHON_MATRIX )) }}
     name: >-
       Run tests Python ${{ matrix.python-version }}
     steps:
