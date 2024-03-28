@@ -12,7 +12,7 @@ on:
 
     secrets:
       PYPI_TOKEN:
-        required: true
+        required: false
 
 jobs:
   build-and-publish:
