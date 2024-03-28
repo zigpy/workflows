@@ -166,11 +166,13 @@ jobs:
           # Ideally this should be part of our dependencies
           # However this plugin is fairly new and doesn't run correctly
           # on a non-GitHub environment.
-          pip install pytest-github-actions-annotate-failures
+          uv pip install pytest-github-actions-annotate-failures
       - name: Run pytest
         run: |
           . venv/bin/activate
+          uv pip install pytest-xdist
           pytest \
+            -n auto \
             -qq \
             --timeout=20 \
             --durations=10 \
