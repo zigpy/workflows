@@ -170,7 +170,9 @@ jobs:
       - name: Run pytest
         run: |
           . venv/bin/activate
+          pip install pytest-xdist
           pytest \
+            -n auto \
             -qq \
             --timeout=20 \
             --durations=10 \
