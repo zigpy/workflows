@@ -81,6 +81,7 @@ jobs:
           uv pip install -r requirements_test.txt
           uv pip install -e .
       - name: Cache base Python virtual environment
+        if: steps.cache-venv.outputs.cache-hit != 'true'
         uses: actions/cache/save@v3
         with:
           path: venv
@@ -121,6 +122,7 @@ jobs:
           . venv/bin/activate
           pre-commit install-hooks
       - name: Cache pre-commit environment
+        if: steps.cache-precommit.outputs.cache-hit != 'true'
         uses: actions/cache/save@v3
         with:
           path: ${{ inputs.PRE_COMMIT_CACHE_PATH }}
