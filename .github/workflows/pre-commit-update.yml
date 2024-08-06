@@ -1,8 +1,5 @@
 name: Pre-commit auto-update
 on:
-  schedule:
-    # Run on mondays
-    - cron: "0 0 * * 1"
   workflow_call:
     inputs:
       PYTHON_VERSION_DEFAULT:
