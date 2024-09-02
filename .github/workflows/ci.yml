@@ -187,6 +187,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: coverage-${{ matrix.python-version }}
+          include-hidden-files: true
           path: .coverage
 
   coverage:
