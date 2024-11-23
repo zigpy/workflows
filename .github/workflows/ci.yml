@@ -222,7 +222,7 @@ jobs:
           coverage report --fail-under=${{ inputs.MINIMUM_COVERAGE_PERCENTAGE }}
           coverage xml
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
