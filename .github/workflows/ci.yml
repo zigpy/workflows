@@ -80,6 +80,11 @@ jobs:
             uv pip install -U pip setuptools pre-commit
             uv pip install -r requirements_test.txt
             uv pip install -e .
+            # Ideally this should be part of our dependencies
+            # However this plugin is fairly new and doesn't run correctly
+            # on a non-GitHub environment.
+            uv pip install pytest-github-actions-annotate-failures
+            uv pip install pytest-xdist
           fi
       - name: Cache base Python virtual environment
         if: steps.cache-venv.outputs.cache-hit != 'true'
@@ -163,17 +168,9 @@ jobs:
       - name: Register Python problem matcher
         run: |
           echo "::add-matcher::.github/workflows/matchers/python.json"
-      - name: Install Pytest Annotation plugin
-        run: |
-          . .venv/bin/activate
-          # Ideally this should be part of our dependencies
-          # However this plugin is fairly new and doesn't run correctly
-          # on a non-GitHub environment.
-          pip install pytest-github-actions-annotate-failures
       - name: Run pytest
         run: |
           . .venv/bin/activate
-          pip install pytest-xdist
           pytest \
             -n auto \
             -qq \
