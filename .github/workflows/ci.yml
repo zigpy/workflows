@@ -65,7 +65,7 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg') }}
+            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg', 'uv.lock') }}
       - name: Create Python virtual environment
         if: steps.cache-venv.outputs.cache-hit != 'true'
         env:
@@ -75,10 +75,12 @@ jobs:
           YARL_NO_EXTENSIONS: 1
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
-          uv venv
-          uv pip install -U pip setuptools pre-commit
-          uv pip install -r requirements_test.txt
-          uv pip install -e .
+          if ! uv sync --group ci ; then
+            uv venv --clear
+            uv pip install -U pip setuptools pre-commit
+            uv pip install -r requirements_test.txt
+            uv pip install -e .
+          fi
       - name: Cache base Python virtual environment
         if: steps.cache-venv.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
@@ -107,7 +109,7 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg') }}
+            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg', 'uv.lock') }}
       - name: Restore pre-commit environment from cache
         id: cache-precommit
         uses: actions/cache/restore@v4
@@ -157,7 +159,7 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg') }}
+            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg', 'uv.lock') }}
       - name: Register Python problem matcher
         run: |
           echo "::add-matcher::.github/workflows/matchers/python.json"
@@ -211,7 +213,7 @@ jobs:
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
-            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg') }}
+            hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg', 'uv.lock') }}
       - name: Download all coverage artifacts
         uses: actions/download-artifact@v4
       - name: Combine coverage results
