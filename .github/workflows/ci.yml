@@ -61,7 +61,7 @@ jobs:
         id: cache-venv
         uses: actions/cache/restore@v4
         with:
-          path: venv
+          path: .venv
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
@@ -75,8 +75,7 @@ jobs:
           YARL_NO_EXTENSIONS: 1
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
-          uv venv venv
-          . venv/bin/activate
+          uv venv
           uv pip install -U pip setuptools pre-commit
           uv pip install -r requirements_test.txt
           uv pip install -e .
@@ -84,7 +83,7 @@ jobs:
         if: steps.cache-venv.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: venv
+          path: .venv
           key: ${{ steps.cache-venv.outputs.cache-primary-key }}
 
   pre-commit:
@@ -104,7 +103,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           fail-on-cache-miss: true
-          path: venv
+          path: .venv
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
@@ -119,7 +118,7 @@ jobs:
       - name: Install pre-commit dependencies
         if: steps.cache-precommit.outputs.cache-hit != 'true'
         run: |
-          . venv/bin/activate
+          . .venv/bin/activate
           pre-commit install-hooks
       - name: Cache pre-commit environment
         if: steps.cache-precommit.outputs.cache-hit != 'true'
@@ -129,7 +128,7 @@ jobs:
           key: ${{ steps.cache-precommit.outputs.cache-primary-key }}
       - name: Lint and static analysis
         run: |
-          . venv/bin/activate
+          . .venv/bin/activate
           pre-commit run --show-diff-on-failure --color=always --all-files
 
   pytest:
@@ -154,7 +153,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           fail-on-cache-miss: true
-          path: venv
+          path: .venv
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
@@ -164,14 +163,14 @@ jobs:
           echo "::add-matcher::.github/workflows/matchers/python.json"
       - name: Install Pytest Annotation plugin
         run: |
-          . venv/bin/activate
+          . .venv/bin/activate
           # Ideally this should be part of our dependencies
           # However this plugin is fairly new and doesn't run correctly
           # on a non-GitHub environment.
           pip install pytest-github-actions-annotate-failures
       - name: Run pytest
         run: |
-          . venv/bin/activate
+          . .venv/bin/activate
           pip install pytest-xdist
           pytest \
             -n auto \
@@ -208,7 +207,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           fail-on-cache-miss: true
-          path: venv
+          path: .venv
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
@@ -217,7 +216,7 @@ jobs:
         uses: actions/download-artifact@v4
       - name: Combine coverage results
         run: |
-          . venv/bin/activate
+          . .venv/bin/activate
           coverage combine coverage*/.coverage*
           coverage report --fail-under=${{ inputs.MINIMUM_COVERAGE_PERCENTAGE }}
           coverage xml
