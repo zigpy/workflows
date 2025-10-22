@@ -7,7 +7,7 @@ on:
       PYTHON_VERSION_DEFAULT:
         description: Default Python version
         required: false
-        default: "3.9"
+        default: "3.11"
         type: string
 
     secrets:
