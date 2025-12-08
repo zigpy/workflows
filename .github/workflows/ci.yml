@@ -79,6 +79,8 @@ jobs:
           FROZENLIST_NO_EXTENSIONS: 1
           YARL_NO_EXTENSIONS: 1
         run: |
+          # Try modern approach: sync dependencies from pyproject.toml [dependency-groups.ci]
+          # If it fails (e.g., project uses legacy requirements.txt), fall back to manual installation
           if ! uv sync --group ci ; then
             uv venv --clear
             uv pip install -U pip setuptools pre-commit
