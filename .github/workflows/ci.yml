@@ -50,7 +50,7 @@ jobs:
         python-version: ${{ fromJSON(format('[{0}]', inputs.PYTHON_MATRIX)) }}
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Python ${{ matrix.python-version }}
         id: python
         uses: actions/setup-python@v5
@@ -99,7 +99,7 @@ jobs:
     needs: prepare-base
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Python ${{ inputs.PYTHON_VERSION_DEFAULT }}
         uses: actions/setup-python@v5
         id: python
@@ -148,7 +148,7 @@ jobs:
       Run tests Python ${{ matrix.python-version }}
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         id: python
@@ -194,7 +194,7 @@ jobs:
     needs: pytest
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         id: python
