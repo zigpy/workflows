@@ -195,7 +195,7 @@ jobs:
     steps:
       - name: Check out code from GitHub
         uses: actions/checkout@v6
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python ${{ inputs.PYTHON_VERSION_DEFAULT }}
         uses: actions/setup-python@v6
         id: python
         with:
