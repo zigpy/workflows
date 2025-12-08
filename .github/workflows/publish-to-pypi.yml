@@ -23,7 +23,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Set up Python ${{ inputs.PYTHON_VERSION_DEFAULT }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ inputs.PYTHON_VERSION_DEFAULT }}
     - name: Install wheel
