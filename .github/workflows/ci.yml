@@ -12,7 +12,7 @@ on:
       CACHE_VERSION:
         description: Cache version
         required: false
-        default: 3
+        default: 4
         type: string
       PYTHON_VERSION_DEFAULT:
         description: Default Python version
@@ -41,7 +41,7 @@ on:
 
 jobs:
   # Separate job to pre-populate the base dependency cache
-  # This prevent upcoming jobs to do the same individually
+  # This prevents upcoming jobs from doing the same individually
   prepare-base:
     name: Prepare base dependencies
     runs-on: ubuntu-latest
@@ -50,22 +50,27 @@ jobs:
         python-version: ${{ fromJSON(format('[{0}]', inputs.PYTHON_MATRIX)) }}
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Python ${{ matrix.python-version }}
         id: python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
       - name: Restore base Python virtual environment
         id: cache-venv
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: .venv
           key: >-
             ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-base-venv-${{
             steps.python.outputs.python-version }}-${{
             hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg', 'uv.lock') }}
+      - name: Install uv
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: false
       - name: Create Python virtual environment
         if: steps.cache-venv.outputs.cache-hit != 'true'
         env:
@@ -74,7 +79,8 @@ jobs:
           FROZENLIST_NO_EXTENSIONS: 1
           YARL_NO_EXTENSIONS: 1
         run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
+          # Try modern approach: sync dependencies from pyproject.toml [dependency-groups.ci]
+          # If it fails (e.g., project uses legacy requirements.txt), fall back to manual installation
           if ! uv sync --group ci ; then
             uv venv --clear
             uv pip install -U pip setuptools pre-commit
@@ -88,7 +94,7 @@ jobs:
           fi
       - name: Cache base Python virtual environment
         if: steps.cache-venv.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .venv
           key: ${{ steps.cache-venv.outputs.cache-primary-key }}
@@ -99,15 +105,15 @@ jobs:
     needs: prepare-base
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Python ${{ inputs.PYTHON_VERSION_DEFAULT }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         id: python
         with:
           python-version: ${{ inputs.PYTHON_VERSION_DEFAULT }}
       - name: Restore base Python virtual environment
         id: cache-venv
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           fail-on-cache-miss: true
           path: .venv
@@ -117,11 +123,10 @@ jobs:
             hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg', 'uv.lock') }}
       - name: Restore pre-commit environment from cache
         id: cache-precommit
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ${{ inputs.PRE_COMMIT_CACHE_PATH }}
-          key: |
-            ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          key: ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Install pre-commit dependencies
         if: steps.cache-precommit.outputs.cache-hit != 'true'
         run: |
@@ -129,7 +134,7 @@ jobs:
           pre-commit install-hooks
       - name: Cache pre-commit environment
         if: steps.cache-precommit.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: ${{ inputs.PRE_COMMIT_CACHE_PATH }}
           key: ${{ steps.cache-precommit.outputs.cache-primary-key }}
@@ -148,16 +153,16 @@ jobs:
       Run tests Python ${{ matrix.python-version }}
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         id: python
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
       - name: Restore base Python virtual environment
         id: cache-venv
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           fail-on-cache-miss: true
           path: .venv
@@ -182,7 +187,7 @@ jobs:
             -p no:sugar \
             tests
       - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-${{ matrix.python-version }}
           include-hidden-files: true
@@ -194,16 +199,16 @@ jobs:
     needs: pytest
     steps:
       - name: Check out code from GitHub
-        uses: actions/checkout@v4
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/checkout@v6
+      - name: Set up Python ${{ inputs.PYTHON_VERSION_DEFAULT }}
+        uses: actions/setup-python@v6
         id: python
         with:
           python-version: ${{ inputs.PYTHON_VERSION_DEFAULT }}
           allow-prereleases: true
       - name: Restore base Python virtual environment
         id: cache-venv
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           fail-on-cache-miss: true
           path: .venv
@@ -212,7 +217,7 @@ jobs:
             steps.python.outputs.python-version }}-${{
             hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg', 'uv.lock') }}
       - name: Download all coverage artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
       - name: Combine coverage results
         run: |
           . .venv/bin/activate
