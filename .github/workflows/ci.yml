@@ -218,10 +218,13 @@ jobs:
             hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg', 'uv.lock') }}
       - name: Download all coverage artifacts
         uses: actions/download-artifact@v7
+        with:
+          pattern: coverage-*
+          path: coverage
       - name: Combine coverage results
         run: |
           . .venv/bin/activate
-          coverage combine coverage*/.coverage*
+          coverage combine $(find coverage -name '.coverage*' -type f)
           coverage report --fail-under=${{ inputs.MINIMUM_COVERAGE_PERCENTAGE }}
           coverage xml
       - name: Upload coverage to Codecov
