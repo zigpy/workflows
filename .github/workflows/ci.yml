@@ -12,7 +12,7 @@ on:
       CACHE_VERSION:
         description: Cache version
         required: false
-        default: 3
+        default: 4
         type: string
       PYTHON_VERSION_DEFAULT:
         description: Default Python version
