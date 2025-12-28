@@ -128,7 +128,9 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: ${{ inputs.PRE_COMMIT_CACHE_PATH }}
-          key: ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          key: >-
+            ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-pre-commit-${{
+            steps.python.outputs.python-version }}-${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Install pre-commit dependencies
         if: steps.cache-precommit.outputs.cache-hit != 'true'
         run: |
