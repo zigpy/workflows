@@ -59,7 +59,7 @@ jobs:
           allow-prereleases: true
       - name: Restore base Python virtual environment
         id: cache-venv
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: .venv
           key: >-
@@ -94,7 +94,7 @@ jobs:
           fi
       - name: Cache base Python virtual environment
         if: steps.cache-venv.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .venv
           key: ${{ steps.cache-venv.outputs.cache-primary-key }}
@@ -113,7 +113,7 @@ jobs:
           python-version: ${{ inputs.PYTHON_VERSION_DEFAULT }}
       - name: Restore base Python virtual environment
         id: cache-venv
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           fail-on-cache-miss: true
           path: .venv
@@ -123,7 +123,7 @@ jobs:
             hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg', 'uv.lock') }}
       - name: Restore pre-commit environment from cache
         id: cache-precommit
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ${{ inputs.PRE_COMMIT_CACHE_PATH }}
           key: ${{ inputs.CACHE_VERSION}}-${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
@@ -134,7 +134,7 @@ jobs:
           pre-commit install-hooks
       - name: Cache pre-commit environment
         if: steps.cache-precommit.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: ${{ inputs.PRE_COMMIT_CACHE_PATH }}
           key: ${{ steps.cache-precommit.outputs.cache-primary-key }}
@@ -162,7 +162,7 @@ jobs:
           allow-prereleases: true
       - name: Restore base Python virtual environment
         id: cache-venv
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           fail-on-cache-miss: true
           path: .venv
@@ -208,7 +208,7 @@ jobs:
           allow-prereleases: true
       - name: Restore base Python virtual environment
         id: cache-venv
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           fail-on-cache-miss: true
           path: .venv
