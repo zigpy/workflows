@@ -17,7 +17,7 @@ on:
       PYTHON_VERSION_DEFAULT:
         description: Default Python version
         required: false
-        default: 3.11.14
+        default: 3.11
         type: string
       PRE_COMMIT_CACHE_PATH:
         description: Pre-commit cache path
@@ -31,7 +31,7 @@ on:
         type: string
       PYTHON_MATRIX:
         description: 'Comma-separated list of Python versions e.g. "3.11","3.12"'
-        default: '"3.11.14", "3.12.12", "3.13.8", "3.14.0"'
+        default: '"3.11", "3.12", "3.13", "3.14"'
         required: false
         type: string
 
