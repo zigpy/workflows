@@ -217,7 +217,7 @@ jobs:
             steps.python.outputs.python-version }}-${{
             hashFiles('setup.py', 'requirements_test.txt', 'requirements.txt', 'pyproject.toml', 'setup.cfg', 'uv.lock') }}
       - name: Download all coverage artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
       - name: Combine coverage results
         run: |
           . .venv/bin/activate
