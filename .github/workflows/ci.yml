@@ -46,6 +46,10 @@ jobs:
     name: Prepare base dependencies
     runs-on: ubuntu-latest
     strategy:
+      # Don't cancel sibling matrix jobs if one fails. A cancelled
+      # `actions/cache/save` step can leave a cache key reserved but
+      # unpopulated, which then can't be restored or re-saved.
+      fail-fast: false
       matrix:
         python-version: ${{ fromJSON(format('[{0}]', inputs.PYTHON_MATRIX)) }}
     steps:
