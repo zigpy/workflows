@@ -95,11 +95,7 @@ jobs:
             uv pip install pytest-xdist
           fi
       - name: Cache base Python virtual environment
-        # Use `always()` so a cancellation (e.g. fail-fast from a sibling
-        # matrix job, or a concurrency cancel) cannot interrupt the save
-        # mid-upload and leave the cache key reserved but unpopulated.
-        # Guard on `create-venv` success so a failed/cancelled venv build
-        # is never cached.
+        # `always()` to ensure ongoing save is not cancelled
         if: always() && steps.create-venv.outcome == 'success'
         uses: actions/cache/save@v5
         with:
