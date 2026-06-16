@@ -73,6 +73,7 @@ jobs:
         with:
           enable-cache: false
       - name: Create Python virtual environment
+        id: create-venv
         if: steps.cache-venv.outputs.cache-hit != 'true'
         env:
           AIOHTTP_NO_EXTENSIONS: 1
@@ -94,7 +95,8 @@ jobs:
             uv pip install pytest-xdist
           fi
       - name: Cache base Python virtual environment
-        if: steps.cache-venv.outputs.cache-hit != 'true'
+        # `always()` to ensure ongoing save is not cancelled
+        if: always() && steps.create-venv.outcome == 'success'
         uses: actions/cache/save@v5
         with:
           path: .venv
